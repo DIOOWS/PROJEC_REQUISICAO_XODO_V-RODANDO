@@ -2,17 +2,4 @@ Django==5.2.1
 gunicorn==21.2.0
 xhtml2pdf==0.2.11
 qrcode==7.4.2
-pillow==10.2.0
-reportlab==4.1.0
-
-# necessário para xhtml2pdf
-html5lib==1.1
-PyPDF2==3.0.1
-
-# Banco SQLite (padrão)
-pysqlite3-binary
-
-# compatibilidade Python 3.13
-asgiref==3.8.1
-sqlparse==0.5.2
-tzdata==2024.1
+Pillow==10.2.0
