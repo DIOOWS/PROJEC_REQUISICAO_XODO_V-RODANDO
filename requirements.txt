@@ -2,7 +2,7 @@ Django==5.2.1
 gunicorn==21.2.0
 xhtml2pdf==0.2.11
 qrcode==7.4.2
-pillow==10.3.0
+pillow==10.2.0
 reportlab==4.1.0
 
 # necessário para xhtml2pdf
