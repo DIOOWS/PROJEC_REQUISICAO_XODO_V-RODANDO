@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: requisicoes-xodo
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn requisicoes.wsgi:application"
+    pythonVersion: 3.10.14
