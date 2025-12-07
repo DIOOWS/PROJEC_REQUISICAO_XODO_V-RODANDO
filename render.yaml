@@ -3,8 +3,10 @@ services:
     name: requisicoes-xodo
     env: python
     pythonVersion: 3.10.14
-    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
-    startCommand: "gunicorn requisicoes.wsgi:application"
+    buildCommand: >
+      pip install --upgrade pip &&
+      pip install -r requirements.txt &&
+      python manage.py collectstatic --noinput
+    startCommand: gunicorn requisicoes.wsgi:application
     autoDeploy: true
     staticPublishPath: staticfiles
-
