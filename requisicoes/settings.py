@@ -95,22 +95,14 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Pasta que contém os arquivos estáticos do seu código (logo, CSS etc.)
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'core', 'static'),
 ]
 
-# Pasta onde o Django junta tudo para produção
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
-# -------------------------------------------------------
-# UPLOADS
-# -------------------------------------------------------
-
-MEDIA_URL = '/media/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 
 # -------------------------------------------------------
 # WEASYPRINT (PDF)
@@ -122,5 +114,4 @@ LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/login/"
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
