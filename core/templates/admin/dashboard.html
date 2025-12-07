@@ -2,24 +2,49 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<h2 class="fw-bold mb-4 text-danger">Dashboard</h2>
 
-<h4>📅 Pedidos por Dia:</h4>
-<ul class="list-group mb-4">
-    {% for item in pedidos_por_dia %}
-    <li class="list-group-item">
-        {{ item.created_at__date }} — <b>{{ item.total }}</b> pedidos
-    </li>
-    {% endfor %}
-</ul>
+<h2 class="fw-bold mb-4 text-danger">📊 Dashboard</h2>
 
-<h4>🍞 Produtos mais pedidos:</h4>
-<ul class="list-group">
-    {% for item in produtos_mais_pedidos %}
-    <li class="list-group-item">
-        {{ item.product__name }} — <b>{{ item.total }}</b> unidades
-    </li>
-    {% endfor %}
-</ul>
+<div class="row g-4">
+
+    <!-- CARD: Pedidos por dia -->
+    <div class="col-12 col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-danger text-white fw-bold">
+                📅 Pedidos por Dia
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for item in pedidos_por_dia %}
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>{{ item.created_at__date|date:"d/m/Y" }}</span>
+                    <b>{{ item.total }} pedido(s)</b>
+                </li>
+                {% empty %}
+                <li class="list-group-item text-center text-muted">Nenhum pedido registrado.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- CARD: Produtos mais pedidos -->
+    <div class="col-12 col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning fw-bold">
+                🍞 Produtos Mais Pedidos
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for item in produtos_mais_pedidos %}
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>{{ item.product__name }}</span>
+                    <b>{{ item.total }} un.</b>
+                </li>
+                {% empty %}
+                <li class="list-group-item text-center text-muted">Nenhum produto pedido ainda.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+</div>
 
 {% endblock %}

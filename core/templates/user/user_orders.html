@@ -2,26 +2,84 @@
 {% block title %}Meus Pedidos{% endblock %}
 
 {% block content %}
-<h2 class="fw-bold text-danger mb-3">Meus Pedidos</h2>
 
-<table class="table table-striped table-bordered">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Requisição</th>
-            <th>Data</th>
-        </tr>
-    </thead>
+<h2 class="fw-bold text-danger mb-4">Meus Pedidos</h2>
 
-    <tbody>
-        {% for order in orders %}
-        <tr>
-            <td>{{ order.id }}</td>
-            <td>{{ order.requisition.name }}</td>
-            <td>{{ order.created_at|date:"d/m/Y H:i" }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+{% if orders %}
+<div class="row g-3">
+
+    {% for order in orders %}
+    <div class="col-12 col-md-6 col-lg-4">
+
+        <div class="order-card shadow-sm">
+
+            <div class="order-header">
+                <span class="order-id">Pedido #{{ order.id }}</span>
+                <span class="order-date">{{ order.created_at|date:"d/m/Y H:i" }}</span>
+            </div>
+
+            <div class="order-body">
+                <strong>Requisição:</strong>
+                <div class="order-req">{{ order.requisition.name }}</div>
+            </div>
+
+        </div>
+
+    </div>
+    {% endfor %}
+
+</div>
+
+{% else %}
+<div class="alert alert-warning text-center fw-bold">
+    Você ainda não enviou nenhum pedido.
+</div>
+{% endif %}
+
+
+<style>
+.order-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 15px;
+    transition: .2s;
+    border-left: 6px solid var(--xodo-red);
+}
+
+.order-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    color: var(--xodo-red-dark);
+    margin-bottom: 10px;
+}
+
+.order-id {
+    font-size: 1rem;
+}
+
+.order-date {
+    font-size: .85rem;
+    opacity: .7;
+}
+
+.order-body {
+    font-size: .95rem;
+}
+
+.order-req {
+    background: #f8f8f8;
+    padding: 6px 10px;
+    border-radius: 8px;
+    margin-top: 4px;
+    font-weight: bold;
+    color: #333;
+}
+</style>
 
 {% endblock %}

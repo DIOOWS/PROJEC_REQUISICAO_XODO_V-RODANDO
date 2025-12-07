@@ -2,9 +2,18 @@
 {% block title %}Pedido Enviado{% endblock %}
 
 {% block content %}
-<div class="alert alert-success text-center fw-bold">
-    ✔ Pedido enviado com sucesso!
+
+<div class="card shadow p-4 text-center" style="border-radius: 18px;">
+    <h3 class="fw-bold mb-3" style="color:#198754;">✔ Pedido enviado com sucesso!</h3>
+
+    <p class="text-secondary">
+        Seu pedido foi registrado e já está disponível para o setor processar.
+    </p>
+
+    <a href="/" class="btn w-100 fw-bold mt-3"
+       style="background:#a61c1c; color:white; border-radius:10px;">
+        ⬅ Voltar ao início
+    </a>
 </div>
 
-<a href="/" class="btn btn-danger w-100">Voltar</a>
 {% endblock %}

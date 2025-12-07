@@ -17,12 +17,17 @@
         {% for product in products %}
         <div class="col-6 col-md-3 col-lg-2">
 
-            <div class="product-card">
-                <img src="{{ product.image.url }}" class="product-img">
+            <div class="product-card h-100 d-flex flex-column justify-content-between">
 
-                <div class="product-name">{{ product.name }}</div>
+                <div>
+                    <img src="{{ product.image.url }}" class="product-img">
 
-                <div class="qty-box">
+                    <div class="product-name text-truncate" title="{{ product.name }}">
+                        {{ product.name }}
+                    </div>
+                </div>
+
+                <div class="qty-box mt-2">
                     <button type="button" class="qty-btn" onclick="changeQty('{{ product.id }}', -1)">−</button>
 
                     <input id="qty_{{ product.id }}"
@@ -34,6 +39,7 @@
 
                     <button type="button" class="qty-btn" onclick="changeQty('{{ product.id }}', 1)">+</button>
                 </div>
+
             </div>
 
         </div>
@@ -45,26 +51,33 @@
 
 </form>
 
+
 <style>
 .product-card {
     background: #fff;
     border-radius: 12px;
-    padding: 12px;
+    padding: 14px;
     text-align: center;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    transition: .2s;
+}
+
+.product-card:hover {
+    transform: scale(1.03);
 }
 
 .product-img {
     width: 70px;
     height: 70px;
     object-fit: contain;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
 }
 
 .product-name {
     font-weight: bold;
     font-size: 0.85rem;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+    min-height: 32px; /* mantém alinhado */
     text-transform: uppercase;
 }
 
@@ -82,12 +95,17 @@
     color: white;
     border: none;
     border-radius: 6px;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: bold;
+    transition: .15s;
+}
+
+.qty-btn:hover {
+    background: #861414;
 }
 
 .qty-input {
-    width: 40px;
+    width: 45px;
     height: 32px;
     text-align: center;
     font-weight: bold;
@@ -97,14 +115,15 @@
 
 .send-btn {
     width: 100%;
-    margin-top: 20px;
+    margin-top: 25px;
     background: #A61C1C;
     color: white;
-    padding: 12px;
+    padding: 14px;
     border: none;
-    border-radius: 10px;
-    font-size: 1rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
     font-weight: bold;
+    transition: .2s;
 }
 
 .send-btn:hover {
@@ -112,12 +131,15 @@
 }
 </style>
 
+
 <script>
 function changeQty(id, amount) {
     let input = document.getElementById("qty_" + id);
     let value = parseInt(input.value) || 0;
+
     value += amount;
     if (value < 0) value = 0;
+
     input.value = value;
 }
 </script>

@@ -43,8 +43,10 @@
 
 <body>
 
-<img src="file://{{ logo_path }}" class="logo">
+<!-- LOGO (corrigido: sem file://) -->
+<img src="{{ logo_path }}" class="logo">
 
+<!-- QR CODE -->
 <img src="data:image/png;base64,{{ qr_base64 }}" class="qr">
 
 <h2>Pedido #{{ order.id }}</h2>

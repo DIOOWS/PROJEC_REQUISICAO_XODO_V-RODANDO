@@ -14,19 +14,25 @@
     {% for req in requisitions %}
     <div class="col-6 col-md-4 col-lg-3">
 
-        <div class="req-card">
+        <div class="req-card d-flex flex-column justify-content-between h-100">
 
-            {% if req.icon %}
-                <img src="{{ req.icon.url }}" class="req-img" alt="Ícone">
-            {% elif req.image %}
-                <img src="{{ req.image.url }}" class="req-img" alt="Imagem">
-            {% else %}
-                <img src="{% static 'default_icon.png' %}" class="req-img">
-            {% endif %}
+            <!-- IMAGEM / ÍCONE -->
+            <div>
+                {% if req.icon %}
+                    <img src="{{ req.icon.url }}" class="req-img" alt="Ícone">
+                {% elif req.image %}
+                    <img src="{{ req.image.url }}" class="req-img" alt="Imagem">
+                {% else %}
+                    <img src="{% static 'default_icon.png' %}" class="req-img">
+                {% endif %}
 
-            <div class="req-title">{{ req.name }}</div>
+                <div class="req-title text-truncate" title="{{ req.name }}">
+                    {{ req.name }}
+                </div>
+            </div>
 
-            <a href="{% url 'requisition_detail' req.id %}" class="req-btn">
+            <!-- BOTÃO -->
+            <a href="{% url 'requisition_detail' req.id %}" class="req-btn mt-2">
                 Abrir
             </a>
 
@@ -39,40 +45,43 @@
 
 <style>
 .req-card {
-    background: white;
+    background: #fff;
     border-radius: 14px;
-    padding: 12px;
-    box-shadow: 0 3px 8px rgba(0,0,0,.12);
-    transition: .2s;
+    padding: 14px;
     text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,.12);
+    transition: transform .2s, box-shadow .2s;
 }
 
 .req-card:hover {
-    transform: scale(1.03);
+    transform: scale(1.05);
+    box-shadow: 0 6px 14px rgba(0,0,0,.18);
 }
 
 .req-img {
     width: 100%;
-    height: 90px;
+    height: 100px;
     object-fit: contain;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
 }
 
 .req-title {
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 1rem;
     color: var(--xodo-red-dark);
-    margin-bottom: 10px;
+    min-height: 35px;
 }
 
 .req-btn {
-    padding: 8px 12px;
-    display: block;
+    padding: 10px 12px;
     background: var(--xodo-red);
-    color: white;
-    border-radius: 8px;
-    text-decoration: none;
+    color: #fff;
+    border-radius: 10px;
     font-weight: bold;
+    text-decoration: none;
+    transition: .2s;
 }
+
 .req-btn:hover {
     background: var(--xodo-red-dark);
 }

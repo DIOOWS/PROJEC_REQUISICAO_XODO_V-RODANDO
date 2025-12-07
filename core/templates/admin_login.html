@@ -19,7 +19,7 @@
 
                 {% if messages %}
                     {% for msg in messages %}
-                        <div class="alert alert-danger">{{ msg }}</div>
+                        <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
                     {% endfor %}
                 {% endif %}
 
@@ -34,7 +34,7 @@
 
                     <button class="btn btn-dark w-100">Entrar</button>
 
-                    <a href="/login/" class="btn btn-outline-secondary mt-3 w-100">
+                    <a href="{% url 'login' %}" class="btn btn-outline-secondary mt-3 w-100">
                         ⬅ Voltar ao Login do Usuário
                     </a>
                 </form>

@@ -7,7 +7,7 @@
 
 <div class="list-group shadow-sm">
 
-    <a href="/xodo-admin/pedidos/" class="list-group-item list-group-item-action fw-bold d-flex justify-content-between">
+    <a href="{% url 'order_list' %}" class="list-group-item list-group-item-action fw-bold d-flex justify-content-between">
         <span>📦 Ver Pedidos</span>
 
         {% if pending_orders > 0 %}
@@ -15,13 +15,15 @@
         {% endif %}
     </a>
 
-    <a href="/xodo-admin/dashboard/" class="list-group-item list-group-item-action fw-bold">
+    <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action fw-bold">
         📊 Dashboard
     </a>
 
+    {% if user.is_superuser %}
     <a href="/admin/" class="list-group-item list-group-item-action fw-bold text-danger">
         ⚙ Django Admin (somente superusuário)
     </a>
+    {% endif %}
 </div>
 
 {% endblock %}

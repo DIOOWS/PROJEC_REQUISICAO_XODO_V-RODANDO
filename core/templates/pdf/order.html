@@ -2,81 +2,118 @@
 <html>
 <head>
 <meta charset="utf-8" />
+
 <style>
     body {
         font-family: Arial, sans-serif;
         font-size: 11px;
+        margin: 20px;
+        color: #222;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #a61c1c;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
     }
 
     .logo {
-        width: 150px;
-        margin-bottom: 15px;
+        width: 160px;
+    }
+
+    h2 {
+        margin: 0;
+        color: #a61c1c;
+    }
+
+    .info p {
+        margin: 2px 0;
+        font-size: 12px;
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 20px;
+        margin-top: 15px;
     }
+
     th {
         background: #a61c1c;
         color: white;
-        padding: 5px;
+        padding: 6px;
         font-size: 12px;
-    }
-    td {
-        padding: 4px;
         border: 1px solid #333;
-        font-size: 11px;
+    }
+
+    td {
+        padding: 6px;
+        border: 1px solid #333;
+        font-size: 12px;
     }
 
     .qr-container {
-        text-align:center;
-        margin-top:20px;
+        margin-top: 30px;
+        text-align: center;
     }
 
     .qr-container img {
-        width: 150px;
+        width: 140px;
     }
+
+    .footer-text {
+        margin-top: 10px;
+        font-size: 11px;
+        color: #555;
+    }
+
 </style>
 </head>
 
 <body>
 
-<!-- LOGO -->
-{% if logo_path %}
-<img src="{{ logo_path }}" class="logo">
-{% endif %}
+<!-- HEADER COM LOGO E TÍTULO -->
+<div class="header">
+    {% if logo_path %}
+        <img src="{{ logo_path }}" class="logo">
+    {% endif %}
+    <div>
+        <h2>Pedido #{{ order.id }}</h2>
+    </div>
+</div>
 
-<h3>Pedido #{{ order.id }}</h3>
+<!-- INFORMAÇÕES DO PEDIDO -->
+<div class="info">
+    <p><strong>Requisição:</strong> {{ order.requisition.name }}</p>
+    <p><strong>Solicitante:</strong> {{ order.user.username }}</p>
+    <p><strong>Data:</strong> {{ order.created_at|date:"d/m/Y H:i" }}</p>
+</div>
 
-<p><strong>Requisição:</strong> {{ order.requisition.name }}</p>
-<p><strong>Setor:</strong> {{ order.user.username }}</p>
-<p><strong>Data:</strong> {{ order.created_at|date:"d/m/Y H:i" }}</p>
-
+<!-- TABELA DE PRODUTOS -->
 <table>
     <thead>
         <tr>
             <th>Produto</th>
-            <th style="width: 80px;">Quantidade</th>
+            <th style="width: 80px; text-align:center;">Quantidade</th>
         </tr>
     </thead>
-
     <tbody>
-    {% for item in order.items.all %}
+        {% for item in order.items.all %}
         <tr>
             <td>{{ item.product.name }}</td>
-            <td style="text-align: center;">{{ item.quantity }}</td>
+            <td style="text-align:center;">{{ item.quantity }}</td>
         </tr>
-    {% endfor %}
+        {% endfor %}
     </tbody>
 </table>
 
 <!-- QR CODE -->
 <div class="qr-container">
-    <img src="data:image/png;base64,{{ qr_code }}">
-    <p style="font-size:12px;">Aponte a câmera para abrir o pedido:</p>
-    <p style="font-size:10px; color:#555;">{{ qr_url }}</p>
+    <img src="data:image/png;base64,{{ qr_base64 }}">
+    <p class="footer-text">Aponte a câmera para abrir o pedido:</p>
+    <p class="footer-text">{{ qr_url }}</p>
 </div>
 
 </body>

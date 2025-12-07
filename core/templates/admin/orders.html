@@ -32,7 +32,7 @@
             <td>{{ order.requisition.name }}</td>
             <td>{{ order.created_at|date:"d/m/Y H:i" }}</td>
             <td class="text-center">
-                <a href="/xodo-admin/pedidos/{{ order.id }}/pdf/" class="btn btn-sm btn-danger fw-bold">
+                <a href="{% url 'generate_pdf' order.id %}" class="btn btn-sm btn-danger fw-bold">
                     📄 Gerar PDF
                 </a>
             </td>
