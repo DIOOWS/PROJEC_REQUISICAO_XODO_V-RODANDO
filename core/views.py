@@ -1,26 +1,28 @@
+import io
+import os
+import base64
+
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.template.loader import get_template
+from django.template.loader import render_to_string
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.db.models import Count, Sum
 from django.conf import settings
-import qrcode
-import base64
-from io import BytesIO
 
-from xhtml2pdf import pisa
-import base64
-import os
+import qrcode
+from weasyprint import HTML
 
 from .models import Requisition, Product, Order, OrderItem
 
 
+# -------------------------------------------------------
+# Função de pedidos pendentes
+# -------------------------------------------------------
 def get_pending_orders():
     return Order.objects.filter(is_read=False).count()
-
 
 
 # ============================================================
@@ -76,7 +78,6 @@ def admin_home(request):
     })
 
 
-
 # ============================================================
 # ÁREA DO USUÁRIO – ENVIO DE PEDIDOS
 # ============================================================
@@ -85,9 +86,7 @@ def admin_home(request):
 def requisition_list(request):
     requisitions = Requisition.objects.all()
 
-    pending_orders = 0
-    if request.user.is_staff:
-        pending_orders = Order.objects.filter(is_read=False).count()
+    pending_orders = get_pending_orders() if request.user.is_staff else 0
 
     return render(request, "user/requisition_list.html", {
         "requisitions": requisitions,
@@ -144,7 +143,7 @@ def order_sent(request):
 def order_list(request):
     orders = Order.objects.all().order_by("-created_at")
 
-    pending_orders = Order.objects.filter(is_read=False).count()
+    pending_orders = get_pending_orders()
 
     Order.objects.filter(is_read=False).update(is_read=True)
 
@@ -154,55 +153,38 @@ def order_list(request):
     })
 
 
-
-
 # ============================================================
-# GERAR PDF — LOGO COM BASE64 (FUNCIONAL 100%)
+# GERAR PDF — WEASYPRINT + BASE64 LOGO + BASE64 QR
 # ============================================================
+
 @staff_member_required
 def generate_pdf(request, id):
-    import qrcode
-    from io import BytesIO
-    from django.core.files.base import ContentFile
-
     order = get_object_or_404(Order, id=id)
-    template = get_template("pdf/order.html")
 
-    # ==== LOGO ====
+    # URL do QR Code
+    qr_url = f"https://{request.get_host()}/xodo-admin/pedidos/{order.id}/"
+
+    # Criar QR base64
+    qr_img = qrcode.make(qr_url)
+    buffer = io.BytesIO()
+    qr_img.save(buffer, format="PNG")
+    qr_base64 = base64.b64encode(buffer.getvalue()).decode()
+
+    # Caminho correto da logo (não use staticfiles no Render)
     logo_path = os.path.join(settings.BASE_DIR, "core", "static", "logo_xodo.png")
-    logo_path = logo_path.replace("\\", "/")
-    logo_url = f"file:///{logo_path}"
 
-    # ==== QR CODE ====
-    # URL REAL DA SUA REDE
-    qr_url = f"http://192.168.100.26:8000/xodo-admin/pedidos/{order.id}"
-
-    qr = qrcode.make(qr_url)
-    qr_buffer = BytesIO()
-    qr.save(qr_buffer, format="PNG")
-    qr_base64 = base64.b64encode(qr_buffer.getvalue()).decode("utf-8")
-
-    html = template.render({
+    html_string = render_to_string("pdf/order_weasy.html", {
         "order": order,
-        "logo_path": logo_url,
-        "qr_code": qr_base64,
+        "qr_base64": qr_base64,
         "qr_url": qr_url,
+        "logo_path": logo_path,
     })
 
-    response = HttpResponse(content_type="application/pdf")
-    response["Content-Disposition"] = f'attachment; filename="pedido_{order.id}.pdf"'
+    pdf = HTML(string=html_string, base_url=request.build_absolute_uri("/")).write_pdf()
 
-    pisa_status = pisa.CreatePDF(
-        html,
-        dest=response,
-        encoding="utf-8",
-    )
-
-    if pisa_status.err:
-        return HttpResponse("Erro ao gerar PDF", status=500)
-
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="pedido_{order.id}.pdf"'
     return response
-
 
 
 # ============================================================
