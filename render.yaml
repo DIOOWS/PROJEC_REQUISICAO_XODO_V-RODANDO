@@ -6,3 +6,5 @@ services:
     buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
     startCommand: "gunicorn requisicoes.wsgi:application"
     autoDeploy: true
+    staticPublishPath: staticfiles
+
