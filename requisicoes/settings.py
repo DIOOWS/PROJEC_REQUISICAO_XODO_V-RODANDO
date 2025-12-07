@@ -34,6 +34,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -96,7 +97,7 @@ STATIC_URL = '/static/'
 
 # Pasta que contém os arquivos estáticos do seu código (logo, CSS etc.)
 STATICFILES_DIRS = [
-    BASE_DIR / "core" / "static",
+    os.path.join(BASE_DIR, 'core', 'static'),
 ]
 
 # Pasta onde o Django junta tudo para produção
@@ -107,7 +108,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # -------------------------------------------------------
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -120,3 +121,6 @@ WEASYPRINT_BASEURL = BASE_DIR
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/login/"
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
