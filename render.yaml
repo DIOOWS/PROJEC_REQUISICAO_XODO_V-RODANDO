@@ -2,8 +2,7 @@ services:
   - type: web
     name: requisicoes-xodo
     env: python
-    buildCommand: |
-      pip install --upgrade pip
-      pip install -r requirements.txt
-    startCommand: gunicorn requisicoes.wsgi:application
-    runtime: python3.10
+    pythonVersion: 3.10.14
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
+    startCommand: "gunicorn requisicoes.wsgi:application"
+    autoDeploy: true
