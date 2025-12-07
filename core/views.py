@@ -70,7 +70,7 @@ def admin_login_view(request):
     return render(request, "admin_login.html")
 
 
-@user_passes_test(lambda u: u.is_staff)
+@user_passes_test(lambda u: u.is_staff, login_url="/xodo-admin/login/")
 def admin_home(request):
     pending_orders = get_pending_orders()
     return render(request, "admin/home.html", {
@@ -85,7 +85,6 @@ def admin_home(request):
 @login_required
 def requisition_list(request):
     requisitions = Requisition.objects.all()
-
     pending_orders = get_pending_orders() if request.user.is_staff else 0
 
     return render(request, "user/requisition_list.html", {
@@ -139,7 +138,7 @@ def order_sent(request):
 # ÁREA DO SETOR (ESTOQUE)
 # ============================================================
 
-@staff_member_required
+@staff_member_required(login_url="/xodo-admin/login/")
 def order_list(request):
     orders = Order.objects.all().order_by("-created_at")
 
@@ -157,20 +156,17 @@ def order_list(request):
 # GERAR PDF — WEASYPRINT + BASE64 LOGO + BASE64 QR
 # ============================================================
 
-@staff_member_required
+@staff_member_required(login_url="/xodo-admin/login/")
 def generate_pdf(request, id):
     order = get_object_or_404(Order, id=id)
 
-    # URL do QR Code
     qr_url = f"https://{request.get_host()}/xodo-admin/pedidos/{order.id}/"
 
-    # Criar QR base64
     qr_img = qrcode.make(qr_url)
     buffer = io.BytesIO()
     qr_img.save(buffer, format="PNG")
     qr_base64 = base64.b64encode(buffer.getvalue()).decode()
 
-    # Caminho correto da logo (não use staticfiles no Render)
     logo_path = os.path.join(settings.BASE_DIR, "core", "static", "logo_xodo.png")
 
     html_string = render_to_string("pdf/order_weasy.html", {
@@ -183,7 +179,7 @@ def generate_pdf(request, id):
     pdf = HTML(string=html_string, base_url=request.build_absolute_uri("/")).write_pdf()
 
     response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="pedido_{order.id}.pdf"'
+    response['Content-Disposition'] = f'attachment; filename=\"pedido_{order.id}.pdf\"'
     return response
 
 
@@ -191,7 +187,7 @@ def generate_pdf(request, id):
 # DASHBOARD
 # ============================================================
 
-@staff_member_required
+@staff_member_required(login_url="/xodo-admin/login/")
 def dashboard(request):
     pending_orders = get_pending_orders()
 
