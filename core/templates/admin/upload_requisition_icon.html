@@ -1,13 +1,13 @@
 {% extends "admin/change_form.html" %}
+{% load static %}
 
-{% block content %}
-<h2>Enviar ícone da Requisição</h2>
-
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    <input type="file" name="file" required class="form-control mb-3">
-    <button class="btn btn-success">Enviar</button>
-</form>
-
-{{ block.super }}
+{% block after_field_sets %}
+<div class="form-row">
+    <h3>Enviar Ícone (Supabase)</h3>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="file" required>
+        <button class="button default" type="submit">Enviar</button>
+    </form>
+</div>
 {% endblock %}
