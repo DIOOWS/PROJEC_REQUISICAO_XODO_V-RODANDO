@@ -5,8 +5,6 @@ from django.shortcuts import redirect
 from .models import Product, Requisition, Order, OrderItem
 from .services.upload_storage import upload_image
 
-import os
-print("TEMPLATE PATH:", os.path.isfile("core/templates/admin/upload_requisition_icon.html"))
 
 # -----------------------------
 #  PRODUCT ADMIN
@@ -27,7 +25,7 @@ class ProductAdmin(admin.ModelAdmin):
             messages.success(request, "Imagem enviada ao Supabase!")
             return redirect(request.path)
 
-        return super().change_view(request, object_id)
+        return super().change_view(request, object_id, form_url, extra_context)
 
 
 # -----------------------------
@@ -49,7 +47,7 @@ class RequisitionAdmin(admin.ModelAdmin):
             messages.success(request, "Ícone enviado ao Supabase!")
             return redirect(request.path)
 
-        return super().change_view(request, object_id)
+        return super().change_view(request, object_id, form_url, extra_context)
 
 
 admin.site.register(Product, ProductAdmin)
