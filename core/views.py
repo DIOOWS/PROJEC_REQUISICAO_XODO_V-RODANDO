@@ -12,7 +12,8 @@ from django.contrib import messages
 from django.db.models import Count, Sum
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404
-from .models import Requisition
+from django.contrib.auth.decorators import login_required
+
 
 import qrcode
 from weasyprint import HTML
@@ -93,28 +94,15 @@ def requisition_list(request):
         "requisitions": requisitions
     })
 
-
-
-
-
-
 @login_required
-def requisition_list(request):
-    requisitions = Requisition.objects.all()
-    pending_orders = get_pending_orders() if request.user.is_staff else 0
+def requisition_detail(request, id):
+    requisition = get_object_or_404(Requisition, id=id)
+    products = requisition.products.all()
 
-    return render(request, "user/requisition_list.html", {
-        "requisitions": requisitions,
-        "pending_orders": pending_orders,
-    })
-
-
-    # Renderiza para o template
     return render(request, "user/requisition_detail.html", {
         "requisition": requisition,
         "products": products,
     })
-
 
 
 @login_required
