@@ -14,25 +14,19 @@
     {% for req in requisitions %}
     <div class="col-6 col-md-4 col-lg-3">
 
-        <div class="req-card d-flex flex-column justify-content-between h-100">
+        <div class="req-card">
 
-            <!-- IMAGEM / ÍCONE -->
-            <div>
-                {% if req.icon %}
-                    <img src="{{ req.icon.url }}" class="req-img" alt="Ícone">
-                {% elif req.image %}
-                    <img src="{{ req.image.url }}" class="req-img" alt="Imagem">
-                {% else %}
-                    <img src="{% static 'default_icon.png' %}" class="req-img">
-                {% endif %}
+            {% if req.icon_url %}
+                <img src="{{ req.icon_url }}" class="req-img">
+            {% elif req.icon %}
+                <img src="{{ req.icon.url }}" class="req-img">
+            {% else %}
+                <img src="{% static 'default_icon.png' %}" class="req-img">
+            {% endif %}
 
-                <div class="req-title text-truncate" title="{{ req.name }}">
-                    {{ req.name }}
-                </div>
-            </div>
+            <div class="req-title">{{ req.name }}</div>
 
-            <!-- BOTÃO -->
-            <a href="{% url 'requisition_detail' req.id %}" class="req-btn mt-2">
+            <a href="{% url 'requisition_detail' req.id %}" class="req-btn">
                 Abrir
             </a>
 
@@ -42,6 +36,9 @@
     {% endfor %}
 
 </div>
+
+{% endblock %}
+
 
 <style>
 .req-card {

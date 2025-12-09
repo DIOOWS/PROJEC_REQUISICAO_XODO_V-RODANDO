@@ -26,5 +26,7 @@ urlpatterns = [
     path("meus-pedidos/", views.user_orders, name="user_orders"),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# -----------------------------------------------------------
+# SERVIR ARQUIVOS DE MÍDIA (MEDIA_URL) NO RENDER
+# -----------------------------------------------------------
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

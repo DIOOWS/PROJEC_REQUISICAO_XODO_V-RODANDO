@@ -2,21 +2,19 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Requisition(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
-    image = models.ImageField(upload_to="requisitions/", null=True, blank=True)
-    icon = models.ImageField(upload_to="icons/", null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    name = models.CharField(max_length=255)
+    icon_url = models.URLField(null=True, blank=True)   # Supabase
 
     def __str__(self):
         return self.name
 
 
 class Product(models.Model):
-    requisition = models.ForeignKey(Requisition, on_delete=models.CASCADE, related_name="products")
-    name = models.CharField(max_length=100)
-    image = models.ImageField(upload_to="products/")
-    unit = models.CharField(max_length=20, default="un")
+    requisition = models.ForeignKey(Requisition, related_name='products', on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+
+    # URL no Supabase
+    image_url = models.URLField(null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -28,19 +26,8 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
 
-    class Meta:
-        permissions = [
-            ("can_receive_orders", "Pode receber e gerenciar pedidos"),
-        ]
-
-    def __str__(self):
-        return f"Pedido {self.id} - {self.requisition.name}"
-
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
+    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
-
-    def __str__(self):
-        return f"{self.product.name} - {self.quantity}"

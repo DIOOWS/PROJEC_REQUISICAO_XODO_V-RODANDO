@@ -3,10 +3,12 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'sua-secret-key'
+# ============================================================
+# BASE
+# ============================================================
 
-# No Render SEMPRE deve ser False
-DEBUG = False
+SECRET_KEY = 'sua-secret-key'
+DEBUG = False   # Render produção = SEMPRE False
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
@@ -14,9 +16,9 @@ ALLOWED_HOSTS = [
     ".onrender.com",
 ]
 
-# -------------------------------------------------------
+# ============================================================
 # APPS
-# -------------------------------------------------------
+# ============================================================
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -25,16 +27,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'core',
 ]
 
-# -------------------------------------------------------
+# ============================================================
 # MIDDLEWARE
-# -------------------------------------------------------
+# ============================================================
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # ✔ Necessário
+
+    # WhiteNoise DEVE vir logo depois do SecurityMiddleware
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -45,15 +51,15 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'requisicoes.urls'
 
-# -------------------------------------------------------
-# TEMPLATES
-# -------------------------------------------------------
+# ============================================================
+# TEMPLATE ENGINE
+# ============================================================
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / "core" / "templates"
+            BASE_DIR / "core" / "templates",
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -69,9 +75,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'requisicoes.wsgi.application'
 
-# -------------------------------------------------------
+# ============================================================
 # DATABASE
-# -------------------------------------------------------
+# ============================================================
 
 DATABASES = {
     'default': {
@@ -80,28 +86,74 @@ DATABASES = {
     }
 }
 
-# -------------------------------------------------------
-# INTERNACIONALIZAÇÃO
-# -------------------------------------------------------
+# ============================================================
+# INTERNATIONALIZATION
+# ============================================================
 
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 
-# -------------------------------------------------------
-# STATICFILES (AJUSTE CRÍTICO)
-# -------------------------------------------------------
+# ============================================================
+# STATIC FILES (WhiteNoise CONFIG CORRETA)
+# ============================================================
 
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 
-# Para arquivos do SEU projeto
 STATICFILES_DIRS = [
     BASE_DIR / "core" / "static",
 ]
 
-# Para arquivos finais que o Render vai servir
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# WhiteNoise correto para Django Admin + seus assets
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# ============================================================
+# MEDIA (uploads locais)
+# ============================================================
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# ============================================================
+# LOGIN
+# ============================================================
+
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/login/"
+
+# ============================================================
+# WEASYPRINT
+# ============================================================
+
+WEASYPRINT_BASEURL = BASE_DIR
+
+# ============================================================
+# SUPABASE
+# ============================================================
+
+# Carrega variáveis de ambiente do Render
+SUPABASE_URL = os.environ.get(
+    "SUPABASE_URL",
+    "https://dwpoetiqoflhmvufalyf.supabase.co"
+)
+
+SUPABASE_KEY = os.environ.get(
+    "SUPABASE_KEY",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIs..."
+)
+
+SUPABASE_BUCKET = "DISPERDICIO"
+
+# URL da logo no bucket "system" (caso queira usar no template)
+LOGO_URL = os.environ.get("LOGO_URL", "")
+
+# ============================================================
+# CONTEXT PROCESSOR GLOBAL
+# ============================================================
+
+TEMPLATES[0]["OPTIONS"]["context_processors"].append(
+    "core.context_processors.global_settings"
+)

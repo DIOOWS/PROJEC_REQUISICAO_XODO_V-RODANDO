@@ -136,7 +136,11 @@
 <nav class="navbar xodo-navbar mb-4">
     <div class="container d-flex justify-content-between">
         <a href="/" class="navbar-brand d-flex align-items-center text-white fw-bold">
-           <img src="{% static 'core/logo_xodo.png' %}" class="xodo-logo me-2">
+
+            <!-- AGORA USANDO SUPABASE -->
+            <img src="{{ SYSTEM_LOGO|default:'/static/core/logo_xodo.png' }}" class="xodo-logo me-2">
+
+
             Sistema de Requisições Xodó
         </a>
 
@@ -161,8 +165,6 @@
     🔔 {{ pending_orders }} novo(s) pedido(s) aguardando
 </div>
 {% endif %}
-
-
 
 <div class="container mb-5">
     {% block content %}{% endblock %}
