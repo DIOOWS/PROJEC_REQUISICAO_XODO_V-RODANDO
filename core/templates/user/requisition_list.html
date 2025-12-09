@@ -18,8 +18,6 @@
 
             {% if req.icon_url %}
                 <img src="{{ req.icon_url }}" class="req-img">
-            {% elif req.icon %}
-                <img src="{{ req.icon.url }}" class="req-img">
             {% else %}
                 <img src="{% static 'default_icon.png' %}" class="req-img">
             {% endif %}

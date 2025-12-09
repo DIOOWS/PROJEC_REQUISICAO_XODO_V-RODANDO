@@ -98,12 +98,16 @@ def requisition_list(request):
 
 
 
-def requisition_detail(request, id):
-    # Recupera requisição com segurança (retorna 404 se não existir)
-    requisition = get_object_or_404(Requisition, id=id)
+@login_required
+def requisition_list(request):
+    requisitions = Requisition.objects.all()
+    pending_orders = get_pending_orders() if request.user.is_staff else 0
 
-    # Busca todos os produtos vinculados
-    products = requisition.products.all()
+    return render(request, "user/requisition_list.html", {
+        "requisitions": requisitions,
+        "pending_orders": pending_orders,
+    })
+
 
     # Renderiza para o template
     return render(request, "user/requisition_detail.html", {
