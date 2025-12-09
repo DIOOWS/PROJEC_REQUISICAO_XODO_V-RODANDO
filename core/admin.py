@@ -50,7 +50,6 @@ class RequisitionAdmin(admin.ModelAdmin):
         return super().change_view(request, object_id)
 
 
-# Registrar tudo no admin
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Requisition, RequisitionAdmin)
 admin.site.register(Order)

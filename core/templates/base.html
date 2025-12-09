@@ -144,7 +144,7 @@
             Sistema de Requisições Xodó
         </a>
 
-        {% if user.is_authenticated %}
+        {% if pending_orders|default:0 > 0 %}
             <div>
                 <span class="nav-user me-3">Olá, {{ user.username }}!</span>
 

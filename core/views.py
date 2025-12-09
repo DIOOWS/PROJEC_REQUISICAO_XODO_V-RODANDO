@@ -18,17 +18,16 @@ from weasyprint import HTML
 from .models import Requisition, Product, Order, OrderItem
 
 
-# -------------------------------------------------------
-# Função de pedidos pendentes
-# -------------------------------------------------------
+# --------------------------------------------------------------------
+# Utilitário
+# --------------------------------------------------------------------
 def get_pending_orders():
     return Order.objects.filter(is_read=False).count()
 
 
-# ============================================================
-# LOGIN / LOGOUT - USUÁRIO COMUM
-# ============================================================
-
+# --------------------------------------------------------------------
+# LOGIN / LOGOUT PÚBLICO
+# --------------------------------------------------------------------
 def login_view(request):
     if request.method == "POST":
         username = request.POST.get("username")
@@ -36,11 +35,12 @@ def login_view(request):
 
         user = authenticate(request, username=username, password=password)
 
-        if user is not None:
+        if user:
             login(request, user)
-            return redirect("requisition_list")
-        else:
-            messages.error(request, "Usuário ou senha inválidos.")
+            redirect_url = request.GET.get("next", "requisition_list")
+            return redirect(redirect_url)
+
+        messages.error(request, "Usuário ou senha inválidos.")
 
     return render(request, "login.html")
 
@@ -50,10 +50,9 @@ def logout_view(request):
     return redirect("login")
 
 
-# ============================================================
-# LOGIN ADMIN / SETOR
-# ============================================================
-
+# --------------------------------------------------------------------
+# LOGIN ADMIN
+# --------------------------------------------------------------------
 def admin_login_view(request):
     if request.method == "POST":
         username = request.POST.get("username")
@@ -61,7 +60,7 @@ def admin_login_view(request):
 
         user = authenticate(request, username=username, password=password)
 
-        if user is not None and user.is_staff:
+        if user and user.is_staff:
             login(request, user)
             return redirect("admin_home")
 
@@ -72,20 +71,17 @@ def admin_login_view(request):
 
 @user_passes_test(lambda u: u.is_staff)
 def admin_home(request):
-    pending_orders = get_pending_orders()
     return render(request, "admin/home.html", {
-        "pending_orders": pending_orders
+        "pending_orders": get_pending_orders()
     })
 
 
-# ============================================================
-# ÁREA DO USUÁRIO – ENVIO DE PEDIDOS
-# ============================================================
-
+# --------------------------------------------------------------------
+# ÁREA DO USUÁRIO
+# --------------------------------------------------------------------
 @login_required
 def requisition_list(request):
     requisitions = Requisition.objects.all()
-
     return render(request, "user/requisition_list.html", {
         "requisitions": requisitions
     })
@@ -98,7 +94,7 @@ def requisition_detail(request, id):
 
     return render(request, "user/requisition_detail.html", {
         "requisition": requisition,
-        "products": products,
+        "products": products
     })
 
 
@@ -125,35 +121,34 @@ def send_order(request, id):
 @login_required
 def user_orders(request):
     orders = Order.objects.filter(user=request.user).order_by("-created_at")
-    return render(request, "user/user_orders.html", {"orders": orders})
+
+    return render(request, "user/user_orders.html", {
+        "orders": orders
+    })
 
 
-@login_required
 def order_sent(request):
     return render(request, "user/order_sent.html")
 
 
-# ============================================================
-# ÁREA DO SETOR (ESTOQUE)
-# ============================================================
-
+# --------------------------------------------------------------------
+# SETOR / ESTOQUE
+# --------------------------------------------------------------------
 @staff_member_required
 def order_list(request):
     orders = Order.objects.all().order_by("-created_at")
 
-    pending_orders = get_pending_orders()
     Order.objects.filter(is_read=False).update(is_read=True)
 
     return render(request, "admin/orders.html", {
         "orders": orders,
-        "pending_orders": pending_orders
+        "pending_orders": get_pending_orders(),
     })
 
 
-# ============================================================
-# GERAR PDF — WEASYPRINT + BASE64 LOGO + BASE64 QR
-# ============================================================
-
+# --------------------------------------------------------------------
+# PDF – WEASYPRINT
+# --------------------------------------------------------------------
 @staff_member_required
 def generate_pdf(request, id):
     order = get_object_or_404(Order, id=id)
@@ -163,39 +158,36 @@ def generate_pdf(request, id):
     qr_img = qrcode.make(qr_url)
     buffer = io.BytesIO()
     qr_img.save(buffer, format="PNG")
-    qr_base64 = base64.b64encode(buffer.getvalue()).decode()
+    qr_b64 = base64.b64encode(buffer.getvalue()).decode()
 
     logo_path = os.path.join(settings.BASE_DIR, "core", "static", "logo_xodo.png")
 
-    html_string = render_to_string("pdf/order_weasy.html", {
+    html = render_to_string("pdf/order_weasy.html", {
         "order": order,
-        "qr_base64": qr_base64,
+        "qr_base64": qr_b64,
         "qr_url": qr_url,
         "logo_path": logo_path,
     })
 
-    pdf = HTML(string=html_string, base_url=request.build_absolute_uri("/")).write_pdf()
+    pdf = HTML(string=html).write_pdf()
 
-    response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="pedido_{order.id}.pdf"'
+    response = HttpResponse(pdf, content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="pedido_{order.id}.pdf"'
     return response
 
 
-# ============================================================
+# --------------------------------------------------------------------
 # DASHBOARD
-# ============================================================
-
+# --------------------------------------------------------------------
 @staff_member_required
 def dashboard(request):
-    pending_orders = get_pending_orders()
-
     pedidos_por_dia = (
         Order.objects.values("created_at__date")
         .annotate(total=Count("id"))
         .order_by("created_at__date")
     )
 
-    produtos_mais_pedidos = (
+    produtos_mais = (
         OrderItem.objects.values("product__name")
         .annotate(total=Sum("quantity"))
         .order_by("-total")[:5]
@@ -203,6 +195,6 @@ def dashboard(request):
 
     return render(request, "admin/dashboard.html", {
         "pedidos_por_dia": pedidos_por_dia,
-        "produtos_mais_pedidos": produtos_mais_pedidos,
-        "pending_orders": pending_orders
+        "produtos_mais_pedidos": produtos_mais,
+        "pending_orders": get_pending_orders(),
     })

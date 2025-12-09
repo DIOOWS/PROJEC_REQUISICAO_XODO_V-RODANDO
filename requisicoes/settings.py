@@ -3,22 +3,18 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ============================================================
-# BASE
-# ============================================================
-
 SECRET_KEY = 'sua-secret-key'
-DEBUG = False   # Render produção = SEMPRE False
+DEBUG = False
 
 ALLOWED_HOSTS = [
-    "127.0.0.1",
+    "projec-requisicao-xodo-v-rodando.onrender.com",
     "localhost",
-    ".onrender.com",
+    "127.0.0.1",
 ]
 
-# ============================================================
-# APPS
-# ============================================================
+CSRF_TRUSTED_ORIGINS = [
+    "https://projec-requisicao-xodo-v-rodando.onrender.com",
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -31,35 +27,25 @@ INSTALLED_APPS = [
     'core',
 ]
 
-# ============================================================
-# MIDDLEWARE
-# ============================================================
-
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 
-    # WhiteNoise DEVE vir logo depois do SecurityMiddleware
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 ROOT_URLCONF = 'requisicoes.urls'
-
-# ============================================================
-# TEMPLATE ENGINE
-# ============================================================
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / "core" / "templates",
+            BASE_DIR / "core" / "templates"
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -68,16 +54,15 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                # Nosso context processor global
+                "core.context_processors.global_settings",
             ],
         },
     },
 ]
 
 WSGI_APPLICATION = 'requisicoes.wsgi.application'
-
-# ============================================================
-# DATABASE
-# ============================================================
 
 DATABASES = {
     'default': {
@@ -86,18 +71,10 @@ DATABASES = {
     }
 }
 
-# ============================================================
-# INTERNATIONALIZATION
-# ============================================================
-
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
-
-# ============================================================
-# STATIC FILES (WhiteNoise CONFIG CORRETA)
-# ============================================================
 
 STATIC_URL = "/static/"
 
@@ -109,61 +86,17 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# ============================================================
-# MEDIA (uploads locais)
-# ============================================================
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# ============================================================
-# LOGIN
-# ============================================================
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/login/"
 
-# ============================================================
-# WEASYPRINT
-# ============================================================
-
 WEASYPRINT_BASEURL = BASE_DIR
 
-# ============================================================
-# SUPABASE
-# ============================================================
-
-# Carrega variáveis de ambiente do Render
-SUPABASE_URL = os.environ.get(
-    "SUPABASE_URL",
-    "https://dwpoetiqoflhmvufalyf.supabase.co"
-)
-
-SUPABASE_KEY = os.environ.get(
-    "SUPABASE_KEY",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIs..."
-)
-
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")
 SUPABASE_BUCKET = "DISPERDICIO"
 
-# URL da logo no bucket "system" (caso queira usar no template)
 LOGO_URL = os.environ.get("LOGO_URL", "")
-
-# ============================================================
-# CONTEXT PROCESSOR GLOBAL
-# ============================================================
-
-TEMPLATES[0]["OPTIONS"]["context_processors"].append(
-    "core.context_processors.global_settings"
-)
-
-CSRF_TRUSTED_ORIGINS = [
-    "https://projec-requisicao-xodo-v-rodando.onrender.com",
-]
-
-ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "localhost",
-    "projec-requisicao-xodo-v-rodando.onrender.com",
-]
