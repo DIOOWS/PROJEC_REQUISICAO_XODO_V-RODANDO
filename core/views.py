@@ -85,16 +85,14 @@ def admin_home(request):
 # ============================================================
 
 @login_required
+@login_required
 def requisition_list(request):
     requisitions = Requisition.objects.all()
 
-    # Mantém o alerta de novos pedidos para administradores
-    pending_orders = get_pending_orders() if request.user.is_staff else 0
-
     return render(request, "user/requisition_list.html", {
-        "requisitions": requisitions,
-        "pending_orders": pending_orders,
+        "requisitions": requisitions
     })
+
 
 
 
