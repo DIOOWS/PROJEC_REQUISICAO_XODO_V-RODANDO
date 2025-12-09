@@ -1,20 +1,12 @@
 {% extends "admin/change_form.html" %}
 
-{% block after_related_objects %}
+{% block content %}
+<h2>Enviar LOGO do sistema</h2>
 
-<h3>📤 Enviar nova LOGO do sistema</h3>
-
-<form method="POST" enctype="multipart/form-data" class="mt-2">
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    <input type="file" name="file" accept="image/*" class="form-control" required>
-    <button class="btn btn-success mt-2">Enviar Logo</button>
+    <input type="file" name="file" required class="form-control mb-3">
+    <button class="btn btn-primary">Enviar nova logo</button>
 </form>
 
-{% if original.logo_url %}
-<div class="mt-3">
-    <h5>Logo atual:</h5>
-    <img src="{{ original.logo_url }}" style="max-height:130px;">
-</div>
-{% endif %}
-
-{% endblock %}
+{{ block

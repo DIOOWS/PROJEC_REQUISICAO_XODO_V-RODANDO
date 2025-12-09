@@ -1,14 +1,13 @@
 {% extends "admin/change_form.html" %}
-{% load static %}
 
-{% block after_related_objects %}
-
-<h3>Enviar imagem do produto</h3>
+{% block content %}
+<h2>Enviar imagem do Produto</h2>
 
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    <input type="file" name="file" accept="image/*" required>
-    <button class="btn btn-primary mt-2">Enviar</button>
+    <input type="file" name="file" required class="form-control mb-3">
+    <button class="btn btn-success">Enviar</button>
 </form>
 
+{{ block.super }}
 {% endblock %}

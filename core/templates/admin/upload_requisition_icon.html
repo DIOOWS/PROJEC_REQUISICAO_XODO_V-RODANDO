@@ -1,16 +1,13 @@
 {% extends "admin/change_form.html" %}
 
 {% block content %}
-<h2>Enviar Ícone da Requisição</h2>
+<h2>Enviar ícone da Requisição</h2>
 
-<form method="post" enctype="multipart/form-data">
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    <input type="file" name="file" class="form-control mb-3" required>
-    <button class="btn btn-success">Enviar Ícone</button>
+    <input type="file" name="file" required class="form-control mb-3">
+    <button class="btn btn-success">Enviar</button>
 </form>
 
-<hr>
-
 {{ block.super }}
-
 {% endblock %}
