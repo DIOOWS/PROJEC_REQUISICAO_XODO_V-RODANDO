@@ -5,6 +5,8 @@ from django.shortcuts import redirect
 from .models import Product, Requisition, Order, OrderItem
 from .services.upload_storage import upload_image
 
+import os
+print("TEMPLATE PATH:", os.path.isfile("core/templates/admin/upload_requisition_icon.html"))
 
 # -----------------------------
 #  PRODUCT ADMIN
