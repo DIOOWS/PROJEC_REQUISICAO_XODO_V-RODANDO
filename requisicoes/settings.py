@@ -157,3 +157,13 @@ LOGO_URL = os.environ.get("LOGO_URL", "")
 TEMPLATES[0]["OPTIONS"]["context_processors"].append(
     "core.context_processors.global_settings"
 )
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://projec-requisicao-xodo-v-rodando.onrender.com",
+]
+
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "projec-requisicao-xodo-v-rodando.onrender.com",
+]
