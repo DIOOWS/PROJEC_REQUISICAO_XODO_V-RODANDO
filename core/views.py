@@ -11,9 +11,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.db.models import Count, Sum
 from django.conf import settings
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.decorators import login_required
-
 
 import qrcode
 from weasyprint import HTML
@@ -86,13 +83,13 @@ def admin_home(request):
 # ============================================================
 
 @login_required
-@login_required
 def requisition_list(request):
     requisitions = Requisition.objects.all()
 
     return render(request, "user/requisition_list.html", {
         "requisitions": requisitions
     })
+
 
 @login_required
 def requisition_detail(request, id):
@@ -131,6 +128,7 @@ def user_orders(request):
     return render(request, "user/user_orders.html", {"orders": orders})
 
 
+@login_required
 def order_sent(request):
     return render(request, "user/order_sent.html")
 
@@ -144,7 +142,6 @@ def order_list(request):
     orders = Order.objects.all().order_by("-created_at")
 
     pending_orders = get_pending_orders()
-
     Order.objects.filter(is_read=False).update(is_read=True)
 
     return render(request, "admin/orders.html", {
@@ -161,16 +158,13 @@ def order_list(request):
 def generate_pdf(request, id):
     order = get_object_or_404(Order, id=id)
 
-    # URL do QR Code
     qr_url = f"https://{request.get_host()}/xodo-admin/pedidos/{order.id}/"
 
-    # Criar QR base64
     qr_img = qrcode.make(qr_url)
     buffer = io.BytesIO()
     qr_img.save(buffer, format="PNG")
     qr_base64 = base64.b64encode(buffer.getvalue()).decode()
 
-    # Caminho da logo (local ou Supabase)
     logo_path = os.path.join(settings.BASE_DIR, "core", "static", "logo_xodo.png")
 
     html_string = render_to_string("pdf/order_weasy.html", {
