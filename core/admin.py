@@ -4,8 +4,6 @@ from django.shortcuts import redirect
 
 from .models import Product, Requisition, Order, OrderItem
 from .services.upload_storage import upload_image
-from .admin_config import SystemConfigAdmin
-
 
 
 # -----------------------------
