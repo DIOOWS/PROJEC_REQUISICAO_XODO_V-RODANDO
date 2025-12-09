@@ -1,7 +1,11 @@
-from .models_config import SystemConfig
+from .models import Order
 
 def global_settings(request):
-    cfg = SystemConfig.objects.first()
+    if request.user.is_authenticated and request.user.is_staff:
+        pending_orders = Order.objects.filter(is_read=False).count()
+    else:
+        pending_orders = 0
+
     return {
-        "SYSTEM_LOGO": cfg.logo_url if cfg else ""
+        "pending_orders": pending_orders
     }
