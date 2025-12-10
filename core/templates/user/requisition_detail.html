@@ -17,7 +17,7 @@
                 {% if product.image_url %}
                     <img src="{{ product.image_url }}" class="product-img">
                 {% else %}
-                    <img src="{{ product.image.url }}" class="product-img">
+                    <img src="{% static 'default_icon.png' %}" class="product-img">
                 {% endif %}
 
                 <div class="product-name">{{ product.name }}</div>
@@ -38,8 +38,6 @@
 </form>
 
 {% endblock %}
-
-
 
 <style>
 .product-card {
@@ -66,7 +64,7 @@
     font-weight: bold;
     font-size: 0.85rem;
     margin-bottom: 10px;
-    min-height: 32px; /* mantém alinhado */
+    min-height: 32px;
     text-transform: uppercase;
 }
 
@@ -120,7 +118,6 @@
 }
 </style>
 
-
 <script>
 function changeQty(id, amount) {
     let input = document.getElementById("qty_" + id);
@@ -132,5 +129,3 @@ function changeQty(id, amount) {
     input.value = value;
 }
 </script>
-
-{% endblock %}
