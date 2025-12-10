@@ -138,13 +138,12 @@
         <a href="/" class="navbar-brand d-flex align-items-center text-white fw-bold">
 
             <!-- AGORA USANDO SUPABASE -->
-            <img src="{{ SYSTEM_LOGO|default:'/static/core/logo_xodo.png' }}" class="xodo-logo me-2">
-
+            <img src="{{ SYSTEM_LOGO|default_if_none:'/static/core/logo_xodo.png' }}">
 
             Sistema de Requisições Xodó
         </a>
 
-        {% if pending_orders|default:0 > 0 %}
+        {% if user.is_authenticated %}
             <div>
                 <span class="nav-user me-3">Olá, {{ user.username }}!</span>
 
@@ -160,7 +159,8 @@
     </div>
 </nav>
 
-{% if pending_orders > 0 %}
+{% if pending_orders|default:0 > 0 %}
+
 <div class="text-center bg-warning py-2 fw-bold">
     🔔 {{ pending_orders }} novo(s) pedido(s) aguardando
 </div>
