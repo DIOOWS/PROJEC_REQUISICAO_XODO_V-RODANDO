@@ -14,6 +14,8 @@ from django.conf import settings
 
 import qrcode
 from weasyprint import HTML
+import traceback
+
 
 from core.models import Order, Requisition, OrderItem
 
@@ -81,10 +83,17 @@ def admin_home(request):
 # --------------------------------------------------------------------
 @login_required
 def requisition_list(request):
-    requisitions = Requisition.objects.all()
-    return render(request, "user/requisition_list.html", {
-        "requisitions": requisitions
-    })
+    try:
+        requisitions = Requisition.objects.all()
+        print("REQUISITIONS FOUND:", requisitions.count())
+        return render(request, "user/requisition_list.html", {
+            "requisitions": requisitions
+        })
+    except Exception as e:
+        print("ERROR IN requisition_list:", str(e))
+        traceback.print_exc()
+        return HttpResponse("Internal Error", status=500)
+
 
 
 @login_required
