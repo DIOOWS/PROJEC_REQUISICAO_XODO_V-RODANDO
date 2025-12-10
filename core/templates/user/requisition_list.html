@@ -22,6 +22,7 @@
                 <img src="{% static 'default_icon.png' %}" class="req-img">
             {% endif %}
 
+
             <div class="req-title">{{ req.name }}</div>
 
             <a href="{% url 'requisition_detail' req.id %}" class="req-btn">
