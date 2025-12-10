@@ -13,11 +13,15 @@ from django.db.models import Count, Sum
 from django.conf import settings
 
 import qrcode
-from weasyprint import HTML
 import traceback
 
 
 from core.models import Order, Requisition, OrderItem
+
+try:
+    from weasyprint import HTML
+except Exception:
+    HTML = None
 
 
 # --------------------------------------------------------------------
@@ -160,6 +164,11 @@ def order_list(request):
 # --------------------------------------------------------------------
 @staff_member_required
 def generate_pdf(request, id):
+
+    # Evita erro no Windows
+    if HTML is None:
+        return HttpResponse("PDF não disponível neste ambiente (WeasyPrint ausente).", status=500)
+
     order = get_object_or_404(Order, id=id)
 
     qr_url = f"https://{request.get_host()}/xodo-admin/pedidos/{order.id}/"
@@ -181,7 +190,7 @@ def generate_pdf(request, id):
     pdf = HTML(string=html).write_pdf()
 
     response = HttpResponse(pdf, content_type="application/pdf")
-    response["Content-Disposition"] = f'attachment; filename="pedido_{order.id}.pdf"'
+    response["Content-Disposition"] = f'attachment; filename=\"pedido_{order.id}.pdf\"'
     return response
 
 
