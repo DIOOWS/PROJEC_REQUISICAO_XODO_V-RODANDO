@@ -1,5 +1,6 @@
 import io
 import base64
+import os
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse
@@ -14,11 +15,8 @@ from django.conf import settings
 import qrcode
 from weasyprint import HTML
 
-from .models import Requisition, Product, Order, OrderItem
-import os
-print("TEMPLATE EXISTS:", os.path.isfile("core/templates/user/requisition_list.html"))
+from core.models import Order, Requisition, OrderItem
 
-print("REQUISITIONS COUNT:", Requisition.objects.count())
 
 # --------------------------------------------------------------------
 # Utilitário
