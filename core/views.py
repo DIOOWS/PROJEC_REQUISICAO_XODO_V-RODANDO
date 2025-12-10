@@ -164,33 +164,73 @@ def order_list(request):
 # --------------------------------------------------------------------
 @staff_member_required
 def generate_pdf(request, id):
-
-    # Evita erro no Windows
-    if HTML is None:
-        return HttpResponse("PDF não disponível neste ambiente (WeasyPrint ausente).", status=500)
+    from reportlab.pdfgen import canvas
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.units import mm
+    from reportlab.lib.utils import ImageReader
+    import qrcode
+    import io
+    import os
 
     order = get_object_or_404(Order, id=id)
 
-    qr_url = f"https://{request.get_host()}/xodo-admin/pedidos/{order.id}/"
-
-    qr_img = qrcode.make(qr_url)
     buffer = io.BytesIO()
-    qr_img.save(buffer, format="PNG")
-    qr_b64 = base64.b64encode(buffer.getvalue()).decode()
+    pdf = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
 
+    # -----------------------------
+    # LOGO
+    # -----------------------------
     logo_path = os.path.join(settings.BASE_DIR, "core", "static", "logo_xodo.png")
+    if os.path.exists(logo_path):
+        pdf.drawImage(logo_path, 20 * mm, height - 40 * mm, width=40 * mm, preserveAspectRatio=True)
 
-    html = render_to_string("pdf/order_weasy.html", {
-        "order": order,
-        "qr_base64": qr_b64,
-        "qr_url": qr_url,
-        "logo_path": logo_path,
-    })
+    # -----------------------------
+    # TÍTULO
+    # -----------------------------
+    pdf.setFont("Helvetica-Bold", 20)
+    pdf.drawString(20 * mm, height - 50 * mm, f"Pedido #{order.id}")
 
-    pdf = HTML(string=html).write_pdf()
+    pdf.setFont("Helvetica", 12)
+    pdf.drawString(20 * mm, height - 60 * mm, f"Requisição: {order.requisition.name}")
+    pdf.drawString(20 * mm, height - 70 * mm, f"Usuário: {order.user.username}")
+    pdf.drawString(20 * mm, height - 80 * mm, f"Data: {order.created_at.strftime('%d/%m/%Y %H:%M')}")
 
-    response = HttpResponse(pdf, content_type="application/pdf")
-    response["Content-Disposition"] = f'attachment; filename=\"pedido_{order.id}.pdf\"'
+    # -----------------------------
+    # QR CODE
+    # -----------------------------
+    qr_url = f"https://{request.get_host()}/xodo-admin/pedidos/{order.id}/"
+    qr_img = qrcode.make(qr_url)
+
+    qr_buffer = io.BytesIO()
+    qr_img.save(qr_buffer, format="PNG")
+    qr_buffer.seek(0)
+
+    pdf.drawImage(ImageReader(qr_buffer), 150 * mm, height - 60 * mm, width=40 * mm, height=40 * mm)
+
+    # -----------------------------
+    # ITENS DO PEDIDO
+    # -----------------------------
+    pdf.setFont("Helvetica-Bold", 14)
+    pdf.drawString(20 * mm, height - 100 * mm, "Itens do Pedido:")
+
+    y = height - 110 * mm
+    pdf.setFont("Helvetica", 12)
+
+    for item in order.items.all():
+        pdf.drawString(25 * mm, y, f"- {item.product.name} (Qtd: {item.quantity})")
+        y -= 8 * mm
+
+        if y < 20 * mm:  # quebra de página
+            pdf.showPage()
+            y = height - 20 * mm
+
+    # Finaliza o PDF
+    pdf.save()
+
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="pedido_{order.id}.pdf"'
     return response
 
 
